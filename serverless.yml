@@ -23,6 +23,7 @@ frameworkVersion: '2'
 provider:
   name: aws
   runtime: nodejs12.x
+  region: 'eu-west-1'
 
 plugins:
   - serverless-finch
@@ -31,7 +32,7 @@ plugins:
 custom:
   ## serverless-finch configuration:
   client:
-    bucketName: rs-aws-app-reconfigured
+    bucketName: rs-aws-app-fe
     distributionFolder: build
   ## serverless-single-page-app-plugin configuration:
   s3LocalPath: ${self:custom.client.distributionFolder}/
