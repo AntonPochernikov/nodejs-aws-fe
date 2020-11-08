@@ -99,7 +99,7 @@ const Form = (props: FormikProps<FormikValues>) => {
 }
 
 export default function PageOrder() {
-  const {id} = useParams();
+  const { id } = useParams();
   const [order, setOrder] = useState<any>({});
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -115,22 +115,25 @@ export default function PageOrder() {
       return;
     }
     const promises: any[] = [
-      axios.get(`${API_PATHS.product}/product`),
+      axios.get(`${API_PATHS.products}`),
       axios.get(`${API_PATHS.order}/order/${id}`)
     ];
     Promise.all(promises)
-      .then(([{data: products}, {data: order}]) => {
+      .then(([{ data: products }, { data: order }]) => {
         const cartItems: CartItem[] = order.items.map((i: OrderItem) => ({
           product: products.find((p: Product) => p.id === i.productId),
           count: i.count
         }));
+
         setOrder(order);
         setCartItems(cartItems);
         setIsLoading(false);
       });
-  }, [id])
+  }, [id]);
 
-  if (isLoading) return <p>loading...</p>;
+  if (isLoading) {
+    return <p>loading...</p>;
+  }
 
   const statusHistory = order.statusHistory || [];
 
