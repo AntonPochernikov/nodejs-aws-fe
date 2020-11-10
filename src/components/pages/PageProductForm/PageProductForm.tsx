@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import {Product, ProductSchema} from "models/Product";
+import {Product, ProductSchema} from 'models/Product';
 import {Formik, Field, FormikProps, FormikValues} from 'formik';
 import {TextField} from 'formik-material-ui';
 import axios from 'axios';
@@ -47,6 +47,7 @@ const Form = (props: FormikProps<FormikValues>) => {
             required
           />
         </Grid>
+
         <Grid item xs={12}>
           <Field
             component={TextField}
@@ -55,9 +56,20 @@ const Form = (props: FormikProps<FormikValues>) => {
             fullWidth
             autoComplete="off"
             multiline
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <Field
+            component={TextField}
+            name="picture"
+            label="Picture URL"
+            fullWidth
+            autoComplete="off"
             required
           />
         </Grid>
+
         <Grid item xs={12} sm={4}>
           <Field
             component={TextField}
@@ -68,6 +80,7 @@ const Form = (props: FormikProps<FormikValues>) => {
             required
           />
         </Grid>
+
         <Grid item xs={12} sm={4}>
           <Field
             component={TextField}
@@ -78,6 +91,7 @@ const Form = (props: FormikProps<FormikValues>) => {
             required
           />
         </Grid>
+
         <Grid item container xs={12} justify="space-between">
           <Button
             color="primary"
@@ -99,18 +113,27 @@ const Form = (props: FormikProps<FormikValues>) => {
 }
 
 const emptyValues: any = ProductSchema.cast();
+interface ParamTypes {
+  id: string
+}
 
 export default function PageProductForm() {
   const history = useHistory();
-  const { id } = useParams();
+  const { id } = useParams<ParamTypes>();
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const onSubmit = (values: FormikValues) => {
     const formattedValues = ProductSchema.cast(values);
-    const productToSave = id ? {...ProductSchema.cast(formattedValues), id} : formattedValues;
-    axios.put(`${API_PATHS.products}`, productToSave)
-      .then(() => history.push('/admin/products'));
+    const productToSave = id
+      ? {...ProductSchema.cast(formattedValues), id}
+      : formattedValues;
+
+    const promise = id
+      ? axios.put(`${API_PATHS.products}/`, productToSave)
+      : axios.post(`${API_PATHS.products}/`, productToSave);
+
+    promise.then(() => history.push('/admin/products'));
   };
 
   useEffect(() => {
@@ -118,6 +141,7 @@ export default function PageProductForm() {
       setIsLoading(false);
       return;
     }
+
     axios.get(`${API_PATHS.products}/${id}`)
       .then(res => {
         setProduct(res.data);
@@ -132,6 +156,7 @@ export default function PageProductForm() {
       <Typography component="h1" variant="h4" align="center">
         {id ? 'Edit product' : 'Create new product'}
       </Typography>
+
       <Formik
         initialValues={product || emptyValues}
         validationSchema={ProductSchema}
